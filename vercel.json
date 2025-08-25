@@ -1,0 +1,43 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "main-app/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "main-app/dist"
+      }
+    },
+    {
+      "src": "sub-apps/user-management/package.json", 
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "sub-apps/user-management/dist"
+      }
+    },
+    {
+      "src": "sub-apps/system-management/package.json",
+      "use": "@vercel/static-build", 
+      "config": {
+        "distDir": "sub-apps/system-management/dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/user/(.*)",
+      "dest": "/sub-apps/user-management/index.html"
+    },
+    {
+      "src": "/system/(.*)",
+      "dest": "/sub-apps/system-management/index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/main-app/index.html"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
+}

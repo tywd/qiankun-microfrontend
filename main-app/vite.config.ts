@@ -6,7 +6,9 @@ import { resolve } from 'path'
 export default defineConfig({
   plugins: [vue()],
   define: {
-    'process.env': process.env
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+    'process.env.VITE_USER_MANAGEMENT_URL': JSON.stringify(process.env.VITE_USER_MANAGEMENT_URL),
+    'process.env.VITE_SYSTEM_MANAGEMENT_URL': JSON.stringify(process.env.VITE_SYSTEM_MANAGEMENT_URL)
   },
   server: {
     port: 8080,
