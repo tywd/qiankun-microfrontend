@@ -1,10 +1,11 @@
-name: Deploy to Vercel
+name: Deploy to Vercel (Disabled)
 
-on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+# 暂时禁用GitHub Actions部署，使用Vercel的GitHub集成
+# on:
+#   push:
+#     branches: [ main, master ]
+#   pull_request:
+#     branches: [ main, master ]
 
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -21,16 +22,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'pnpm'
-          
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
           
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
@@ -61,16 +62,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'pnpm'
-          
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
           
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
@@ -100,16 +101,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'pnpm'
-          
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
           
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
