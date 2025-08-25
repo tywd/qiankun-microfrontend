@@ -1,13 +1,14 @@
-name: Deploy Microfrontend
+name: Deploy Microfrontend (Disabled)
 
-on:
-  push:
-    branches: 
-      - main      # 生产环境
-      - develop   # 测试环境
-  pull_request:
-    branches: 
-      - main
+# 暂时禁用GitHub Actions部署，使用Vercel的GitHub集成
+# on:
+#   push:
+#     branches: 
+#       - main      # 生产环境
+#       - develop   # 测试环境
+#   pull_request:
+#     branches: 
+#       - main
 
 env:
   NODE_VERSION: '18'

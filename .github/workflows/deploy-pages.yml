@@ -1,10 +1,11 @@
-name: Deploy to GitHub Pages
+name: Deploy to GitHub Pages (Disabled)
 
-on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+# 暂时禁用GitHub Pages部署，使用Vercel部署
+# on:
+#   push:
+#     branches: [ main, master ]
+#   pull_request:
+#     branches: [ main, master ]
 
 permissions:
   contents: read

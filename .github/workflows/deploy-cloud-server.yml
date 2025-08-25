@@ -1,9 +1,10 @@
-name: Deploy to Cloud Server
+name: Deploy to Cloud Server (Disabled)
 
-on:
-  push:
-    branches: [ main, master ]
-  workflow_dispatch:
+# 暂时禁用云服务器部署，使用Vercel部署
+# on:
+#   push:
+#     branches: [ main, master ]
+#   workflow_dispatch:
 
 jobs:
   deploy:
