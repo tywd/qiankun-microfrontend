@@ -1,15 +1,7 @@
 {
-  "name": "qiankun-main-app",
-  "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
-    }
-  ],
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install",
   "routes": [
     {
       "src": "/user/(.*)",
@@ -35,17 +27,8 @@
     }
   ],
   "env": {
-    "NODE_ENV": "production"
-  },
-  "build": {
-    "env": {
-      "VITE_USER_MANAGEMENT_URL": "https://qiankun-user-management.vercel.app",
-      "VITE_SYSTEM_MANAGEMENT_URL": "https://qiankun-system-management.vercel.app"
-    }
-  },
-  "functions": {
-    "app/api/**/*.js": {
-      "runtime": "nodejs18.x"
-    }
+    "NODE_ENV": "production",
+    "VITE_USER_MANAGEMENT_URL": "https://qiankun-user-management.vercel.app",
+    "VITE_SYSTEM_MANAGEMENT_URL": "https://qiankun-system-management.vercel.app"
   }
 }
