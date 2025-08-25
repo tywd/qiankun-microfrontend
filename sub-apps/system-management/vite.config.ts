@@ -28,6 +28,17 @@ export default defineConfig({
     outDir: 'dist',
     cssCodeSplit: false,
     sourcemap: false,
-    minify: 'terser'
+    minify: 'terser',
+    rollupOptions: {
+      external: [],
+      output: {
+        globals: {}
+      }
+    }
+  },
+  // 确保在生产环境中也能正确暴露微前端入口
+  define: {
+    __VUE_OPTIONS_API__: true,
+    __VUE_PROD_DEVTOOLS__: false
   }
 })

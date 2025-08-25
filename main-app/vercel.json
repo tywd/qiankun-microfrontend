@@ -7,24 +7,6 @@
       "handle": "filesystem"
     },
     {
-      "src": "/user/(.*)",
-      "dest": "https://qiankun-user-management.vercel.app/$1",
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization"
-      }
-    },
-    {
-      "src": "/system/(.*)",
-      "dest": "https://qiankun-system-management.vercel.app/$1",
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization"
-      }
-    },
-    {
       "src": "/(.*)",
       "dest": "/index.html"
     }
