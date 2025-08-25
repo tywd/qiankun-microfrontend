@@ -1,0 +1,24 @@
+{
+  "name": "enterprise-microfrontend",
+  "version": "1.0.0",
+  "description": "企业级微前端管理后台项目",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter qiankun-main-app dev\" \"pnpm --filter user-management dev\" \"pnpm --filter system-management dev\"",
+    "build": "pnpm --filter qiankun-main-app build && pnpm --filter user-management build && pnpm --filter system-management build",
+    "build:main": "pnpm --filter qiankun-main-app build",
+    "build:user": "pnpm --filter user-management build",
+    "build:system": "pnpm --filter system-management build",
+    "deploy": "pnpm build && node scripts/deploy.js",
+    "install:all": "pnpm install --recursive",
+    "clean": "pnpm --filter qiankun-main-app clean && pnpm --filter user-management clean && pnpm --filter system-management clean"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}

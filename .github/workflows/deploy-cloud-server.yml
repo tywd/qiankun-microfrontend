@@ -1,0 +1,40 @@
+name: Deploy to Cloud Server
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Deploy to Cloud Server
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        port: ${{ secrets.PORT }}
+        script: |
+          cd /var/www/qiankun-app
+          git pull origin main
+          chmod +x scripts/cloud-server-deploy.sh
+          ./scripts/cloud-server-deploy.sh
+          
+    - name: Notify deployment status
+      if: always()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        text: |
+          微前端应用部署 ${{ job.status }}
+          分支: ${{ github.ref }}
+          提交: ${{ github.sha }}
+          时间: ${{ github.event.head_commit.timestamp }}
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

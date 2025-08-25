@@ -1,0 +1,45 @@
+{
+  "envId": "your-env-id",
+  "framework": {
+    "name": "qiankun-micro-frontend",
+    "plugins": {
+      "main-app": {
+        "use": "@cloudbase/framework-plugin-website",
+        "inputs": {
+          "buildCommand": "cd main-app && pnpm install && pnpm build",
+          "outputPath": "main-app/dist",
+          "cloudPath": "/",
+          "ignore": [
+            ".git",
+            "node_modules",
+            "cloudbaserc.js"
+          ]
+        }
+      },
+      "user-management": {
+        "use": "@cloudbase/framework-plugin-website", 
+        "inputs": {
+          "buildCommand": "cd sub-apps/user-management && pnpm install && pnpm build",
+          "outputPath": "sub-apps/user-management/dist",
+          "cloudPath": "/user-management",
+          "ignore": [
+            ".git",
+            "node_modules"
+          ]
+        }
+      },
+      "system-management": {
+        "use": "@cloudbase/framework-plugin-website",
+        "inputs": {
+          "buildCommand": "cd sub-apps/system-management && pnpm install && pnpm build", 
+          "outputPath": "sub-apps/system-management/dist",
+          "cloudPath": "/system-management",
+          "ignore": [
+            ".git",
+            "node_modules"
+          ]
+        }
+      }
+    }
+  }
+}
