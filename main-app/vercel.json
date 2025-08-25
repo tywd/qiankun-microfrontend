@@ -4,6 +4,9 @@
   "installCommand": "npm install",
   "routes": [
     {
+      "handle": "filesystem"
+    },
+    {
       "src": "/user/(.*)",
       "dest": "https://qiankun-user-management.vercel.app/$1",
       "headers": {
