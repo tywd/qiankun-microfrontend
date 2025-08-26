@@ -7,9 +7,9 @@ import { SHARED_CONFIG } from '../../../shared/index'
 const microApps: RegistrableApp<any>[] = [
   {
     name: 'user-management',
-    entry: process.env.NODE_ENV === 'development' 
+    entry: import.meta.env.DEV 
       ? '//localhost:8081'  // 开发环境
-      : import.meta.env.VITE_USER_MANAGEMENT_URL || 'https://qiankun-user-management.vercel.app', // Vercel部署环境
+      : 'https://qiankun-user-management.vercel.app', // 生产环境
     container: '#micro-app-container',
     activeRule: '/user',
     props: {
@@ -22,9 +22,9 @@ const microApps: RegistrableApp<any>[] = [
   },
   {
     name: 'system-management',
-    entry: process.env.NODE_ENV === 'development'
+    entry: import.meta.env.DEV
       ? '//localhost:8082'  // 开发环境
-      : import.meta.env.VITE_SYSTEM_MANAGEMENT_URL || 'https://qiankun-system-management.vercel.app', // Vercel部署环境
+      : 'https://qiankun-system-management.vercel.app', // 生产环境
     container: '#micro-app-container',
     activeRule: '/system',
     props: {

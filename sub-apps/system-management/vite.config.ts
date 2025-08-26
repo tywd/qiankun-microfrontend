@@ -29,14 +29,6 @@ export default defineConfig({
     cssCodeSplit: false,
     sourcemap: false,
     minify: 'terser',
-    rollupOptions: {
-      external: [],
-      output: {
-        // 确保资源能够被正确加载
-        chunkFileNames: 'assets/[name]-[hash].js',
-        entryFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash].[ext]'
-      }
-    }
+    target: 'es2015'
   }
 })
