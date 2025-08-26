@@ -72,7 +72,6 @@ jobs:
         
       - name: Deploy to Vercel
         id: deploy
-        working-directory: sub-apps/user-management
         env:
           VERCEL_PROJECT_ID: ${{ env.VERCEL_PROJECT_ID_USER }}
           VERCEL_ORG_ID: ${{ env.VERCEL_ORG_ID }}
@@ -80,8 +79,12 @@ jobs:
         run: |
           set -e
           
+          # 进入子应用目录
+          cd sub-apps/user-management
+          
           # 直接使用vercel部署，不使用link
           echo "🚀 Starting deployment without link..."
+          echo "📍 Current directory: $(pwd)"
           
           # 设置环境变量
           vercel env add NODE_ENV production production --token="${{ env.VERCEL_TOKEN }}" || true
@@ -124,7 +127,6 @@ jobs:
         
       - name: Deploy to Vercel
         id: deploy
-        working-directory: sub-apps/system-management
         env:
           VERCEL_PROJECT_ID: ${{ env.VERCEL_PROJECT_ID_SYSTEM }}
           VERCEL_ORG_ID: ${{ env.VERCEL_ORG_ID }}
@@ -132,8 +134,12 @@ jobs:
         run: |
           set -e
           
+          # 进入子应用目录
+          cd sub-apps/system-management
+          
           # 直接使用vercel部署，不使用link
           echo "🚀 Starting deployment without link..."
+          echo "📍 Current directory: $(pwd)"
           
           # 设置环境变量
           vercel env add NODE_ENV production production --token="${{ env.VERCEL_TOKEN }}" || true
@@ -177,7 +183,6 @@ jobs:
         
       - name: Deploy to Vercel
         id: deploy
-        working-directory: main-app
         env:
           VERCEL_PROJECT_ID: ${{ env.VERCEL_PROJECT_ID_MAIN }}
           VERCEL_ORG_ID: ${{ env.VERCEL_ORG_ID }}
@@ -185,8 +190,12 @@ jobs:
         run: |
           set -e
           
+          # 进入主应用目录
+          cd main-app
+          
           # 直接使用vercel部署，不使用link
           echo "🚀 Starting main app deployment without link..."
+          echo "📍 Current directory: $(pwd)"
           
           # 动态设置子应用URL环境变量
           USER_URL="${{ needs.deploy-user-management.outputs.production-url || 'https://qiankun-user-management.vercel.app' }}"
