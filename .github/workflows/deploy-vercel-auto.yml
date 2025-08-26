@@ -75,28 +75,31 @@ jobs:
         working-directory: sub-apps/user-management
         env:
           VERCEL_PROJECT_ID: ${{ env.VERCEL_PROJECT_ID_USER }}
+        shell: bash
         run: |
-          # 设置环境变量
-          vercel env add NODE_ENV production production --token=${{ env.VERCEL_TOKEN }} || true
-          vercel env add VITE_APP_BASE_URL /user production --token=${{ env.VERCEL_TOKEN }} || true
+          set -e
           
-          if [ "${{ github.event_name }}" == "push" ] && [ "${{ github.ref }}" == "refs/heads/main" ]; then
+          # 设置环境变量
+          vercel env add NODE_ENV production production --token="${{ env.VERCEL_TOKEN }}" || true
+          vercel env add VITE_APP_BASE_URL /user production --token="${{ env.VERCEL_TOKEN }}" || true
+          
+          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
             # 生产部署
             echo "🚀 Deploying to production..."
-            vercel pull --environment=production --token=${{ env.VERCEL_TOKEN }}
-            vercel build --prod --token=${{ env.VERCEL_TOKEN }}
-            URL=$(vercel deploy --prebuilt --prod --token=${{ env.VERCEL_TOKEN }})
-            echo "production-url=$URL" >> $GITHUB_OUTPUT
-            echo "url=$URL" >> $GITHUB_OUTPUT
-            echo "✅ Production deployment: $URL"
+            vercel pull --environment=production --token="${{ env.VERCEL_TOKEN }}"
+            vercel build --prod --token="${{ env.VERCEL_TOKEN }}"
+            URL=$(vercel deploy --prebuilt --prod --token="${{ env.VERCEL_TOKEN }}")
+            echo "production-url=${URL}" >> "$GITHUB_OUTPUT"
+            echo "url=${URL}" >> "$GITHUB_OUTPUT"
+            echo "✅ Production deployment: ${URL}"
           else
             # 预览部署
             echo "🔄 Deploying preview..."
-            vercel pull --environment=preview --token=${{ env.VERCEL_TOKEN }}
-            vercel build --token=${{ env.VERCEL_TOKEN }}
-            URL=$(vercel deploy --prebuilt --token=${{ env.VERCEL_TOKEN }})
-            echo "url=$URL" >> $GITHUB_OUTPUT
-            echo "✅ Preview deployment: $URL"
+            vercel pull --environment=preview --token="${{ env.VERCEL_TOKEN }}"
+            vercel build --token="${{ env.VERCEL_TOKEN }}"
+            URL=$(vercel deploy --prebuilt --token="${{ env.VERCEL_TOKEN }}")
+            echo "url=${URL}" >> "$GITHUB_OUTPUT"
+            echo "✅ Preview deployment: ${URL}"
           fi
 
   # 📦 部署子应用 - 系统管理
@@ -124,28 +127,31 @@ jobs:
         working-directory: sub-apps/system-management
         env:
           VERCEL_PROJECT_ID: ${{ env.VERCEL_PROJECT_ID_SYSTEM }}
+        shell: bash
         run: |
-          # 设置环境变量
-          vercel env add NODE_ENV production production --token=${{ env.VERCEL_TOKEN }} || true
-          vercel env add VITE_APP_BASE_URL /system production --token=${{ env.VERCEL_TOKEN }} || true
+          set -e
           
-          if [ "${{ github.event_name }}" == "push" ] && [ "${{ github.ref }}" == "refs/heads/main" ]; then
+          # 设置环境变量
+          vercel env add NODE_ENV production production --token="${{ env.VERCEL_TOKEN }}" || true
+          vercel env add VITE_APP_BASE_URL /system production --token="${{ env.VERCEL_TOKEN }}" || true
+          
+          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
             # 生产部署
             echo "🚀 Deploying to production..."
-            vercel pull --environment=production --token=${{ env.VERCEL_TOKEN }}
-            vercel build --prod --token=${{ env.VERCEL_TOKEN }}
-            URL=$(vercel deploy --prebuilt --prod --token=${{ env.VERCEL_TOKEN }})
-            echo "production-url=$URL" >> $GITHUB_OUTPUT
-            echo "url=$URL" >> $GITHUB_OUTPUT
-            echo "✅ Production deployment: $URL"
+            vercel pull --environment=production --token="${{ env.VERCEL_TOKEN }}"
+            vercel build --prod --token="${{ env.VERCEL_TOKEN }}"
+            URL=$(vercel deploy --prebuilt --prod --token="${{ env.VERCEL_TOKEN }}")
+            echo "production-url=${URL}" >> "$GITHUB_OUTPUT"
+            echo "url=${URL}" >> "$GITHUB_OUTPUT"
+            echo "✅ Production deployment: ${URL}"
           else
             # 预览部署
             echo "🔄 Deploying preview..."
-            vercel pull --environment=preview --token=${{ env.VERCEL_TOKEN }}
-            vercel build --token=${{ env.VERCEL_TOKEN }}
-            URL=$(vercel deploy --prebuilt --token=${{ env.VERCEL_TOKEN }})
-            echo "url=$URL" >> $GITHUB_OUTPUT
-            echo "✅ Preview deployment: $URL"
+            vercel pull --environment=preview --token="${{ env.VERCEL_TOKEN }}"
+            vercel build --token="${{ env.VERCEL_TOKEN }}"
+            URL=$(vercel deploy --prebuilt --token="${{ env.VERCEL_TOKEN }}")
+            echo "url=${URL}" >> "$GITHUB_OUTPUT"
+            echo "✅ Preview deployment: ${URL}"
           fi
 
   # 📦 部署主应用
@@ -174,25 +180,28 @@ jobs:
         working-directory: main-app
         env:
           VERCEL_PROJECT_ID: ${{ env.VERCEL_PROJECT_ID_MAIN }}
+        shell: bash
         run: |
+          set -e
+          
           # 动态设置子应用URL环境变量
           USER_URL="${{ needs.deploy-user-management.outputs.production-url || 'https://qiankun-user-management.vercel.app' }}"
           SYSTEM_URL="${{ needs.deploy-system-management.outputs.production-url || 'https://qiankun-system-management.vercel.app' }}"
           
-          vercel env add VITE_USER_MANAGEMENT_URL "$USER_URL" production --token=${{ env.VERCEL_TOKEN }} || true
-          vercel env add VITE_SYSTEM_MANAGEMENT_URL "$SYSTEM_URL" production --token=${{ env.VERCEL_TOKEN }} || true
+          vercel env add VITE_USER_MANAGEMENT_URL "$USER_URL" production --token="${{ env.VERCEL_TOKEN }}" || true
+          vercel env add VITE_SYSTEM_MANAGEMENT_URL "$SYSTEM_URL" production --token="${{ env.VERCEL_TOKEN }}" || true
           
-          if [ "${{ github.event_name }}" == "push" ] && [ "${{ github.ref }}" == "refs/heads/main" ]; then
+          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
             # 生产部署
             echo "🚀 Deploying main app to production..."
             echo "📍 User Management URL: $USER_URL"
             echo "📍 System Management URL: $SYSTEM_URL"
-            vercel pull --environment=production --token=${{ env.VERCEL_TOKEN }}
-            vercel build --prod --token=${{ env.VERCEL_TOKEN }}
-            URL=$(vercel deploy --prebuilt --prod --token=${{ env.VERCEL_TOKEN }})
-            echo "production-url=$URL" >> $GITHUB_OUTPUT
-            echo "url=$URL" >> $GITHUB_OUTPUT
-            echo "✅ Main app production deployment: $URL"
+            vercel pull --environment=production --token="${{ env.VERCEL_TOKEN }}"
+            vercel build --prod --token="${{ env.VERCEL_TOKEN }}"
+            URL=$(vercel deploy --prebuilt --prod --token="${{ env.VERCEL_TOKEN }}")
+            echo "production-url=${URL}" >> "$GITHUB_OUTPUT"
+            echo "url=${URL}" >> "$GITHUB_OUTPUT"
+            echo "✅ Main app production deployment: ${URL}"
           else
             # 预览部署
             echo "🔄 Deploying main app preview..."
@@ -200,11 +209,11 @@ jobs:
             SYSTEM_PREVIEW_URL="${{ needs.deploy-system-management.outputs.preview-url || 'https://qiankun-system-management.vercel.app' }}"
             echo "📍 User Management Preview URL: $USER_PREVIEW_URL"
             echo "📍 System Management Preview URL: $SYSTEM_PREVIEW_URL"
-            vercel pull --environment=preview --token=${{ env.VERCEL_TOKEN }}
-            vercel build --token=${{ env.VERCEL_TOKEN }}
-            URL=$(vercel deploy --prebuilt --token=${{ env.VERCEL_TOKEN }})
-            echo "url=$URL" >> $GITHUB_OUTPUT
-            echo "✅ Main app preview deployment: $URL"
+            vercel pull --environment=preview --token="${{ env.VERCEL_TOKEN }}"
+            vercel build --token="${{ env.VERCEL_TOKEN }}"
+            URL=$(vercel deploy --prebuilt --token="${{ env.VERCEL_TOKEN }}")
+            echo "url=${URL}" >> "$GITHUB_OUTPUT"
+            echo "✅ Main app preview deployment: ${URL}"
           fi
 
   # 💬 通知部署结果
