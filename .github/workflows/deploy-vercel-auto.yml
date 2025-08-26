@@ -79,6 +79,10 @@ jobs:
         run: |
           set -e
           
+          # 初始化vercel项目配置
+          echo "Initializing Vercel project..."
+          vercel link --token="${{ env.VERCEL_TOKEN }}" --scope="${{ env.VERCEL_ORG_ID }}" --project="${{ env.VERCEL_PROJECT_ID_USER }}" || true
+          
           # 设置环境变量
           vercel env add NODE_ENV production production --token="${{ env.VERCEL_TOKEN }}" || true
           vercel env add VITE_APP_BASE_URL /user production --token="${{ env.VERCEL_TOKEN }}" || true
@@ -126,6 +130,10 @@ jobs:
         shell: bash
         run: |
           set -e
+          
+          # 初始化vercel项目配置
+          echo "Initializing Vercel project..."
+          vercel link --token="${{ env.VERCEL_TOKEN }}" --scope="${{ env.VERCEL_ORG_ID }}" --project="${{ env.VERCEL_PROJECT_ID_SYSTEM }}" || true
           
           # 设置环境变量
           vercel env add NODE_ENV production production --token="${{ env.VERCEL_TOKEN }}" || true
@@ -175,6 +183,10 @@ jobs:
         shell: bash
         run: |
           set -e
+          
+          # 初始化vercel项目配置
+          echo "Initializing Vercel project..."
+          vercel link --token="${{ env.VERCEL_TOKEN }}" --scope="${{ env.VERCEL_ORG_ID }}" --project="${{ env.VERCEL_PROJECT_ID_MAIN }}" || true
           
           # 动态设置子应用URL环境变量
           USER_URL="${{ needs.deploy-user-management.outputs.production-url || 'https://qiankun-user-management.vercel.app' }}"
