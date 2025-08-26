@@ -58,6 +58,11 @@ VERCEL_PROJECT_ID_USER = prj_user456... (用户管理Project ID)
 VERCEL_PROJECT_ID_SYSTEM = prj_system789... (系统管理Project ID)
 ```
 
+**重要提示**：
+- 确保所有 Project ID 都正确配置
+- VERCEL_TOKEN 必须有项目部署权限
+- 配置名称必须严格匹配
+
 ## 🚀 使用方法
 
 ### 自动部署到生产环境
