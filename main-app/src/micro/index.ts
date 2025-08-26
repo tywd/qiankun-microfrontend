@@ -76,25 +76,44 @@ export function registerApps() {
 
 // 启动微前端
 export function startMicroApps() {
-  start({
-    prefetch: 'all', // 预加载所有微应用
-    sandbox: {
-      strictStyleIsolation: false,  // 关闭严格样式隔离，避免Element Plus样式问题
-      experimentalStyleIsolation: true // 使用实验性样式隔离
-    },
-    singular: false, // 是否为单实例场景
-    fetch: (url, options) => {
-      // 自定义fetch，增强错误处理
-      console.log('正在加载微应用资源:', url)
-      return window.fetch(url, {
-        ...options,
-        mode: 'cors',
-        credentials: 'omit'
-      }).catch(error => {
-        console.error('微应用资源加载失败:', url, error)
-        throw error
-      })
-    }
+  // 等待容器元素就绪
+  const waitForContainer = () => {
+    return new Promise<void>((resolve) => {
+      const checkContainer = () => {
+        const container = document.querySelector('#micro-app-container')
+        if (container) {
+          console.log('微前端容器就绪，开始启动qiankun')
+          resolve()
+        } else {
+          console.log('等待微前端容器就绪...')
+          setTimeout(checkContainer, 100)
+        }
+      }
+      checkContainer()
+    })
+  }
+
+  waitForContainer().then(() => {
+    start({
+      prefetch: 'all', // 预加载所有微应用
+      sandbox: {
+        strictStyleIsolation: false,  // 关闭严格样式隔离，避免Element Plus样式问题
+        experimentalStyleIsolation: false // 关闭实验性样式隔离，减少样式冲突
+      },
+      singular: false, // 是否为单实例场景
+      fetch: (url, options) => {
+        // 自定义fetch，增强错误处理
+        console.log('正在加载微应用资源:', url)
+        return window.fetch(url, {
+          ...options,
+          mode: 'cors',
+          credentials: 'omit'
+        }).catch(error => {
+          console.error('微应用资源加载失败:', url, error)
+          throw error
+        })
+      }
+    })
   })
 }
 

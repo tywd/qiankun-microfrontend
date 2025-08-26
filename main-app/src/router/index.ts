@@ -39,6 +39,11 @@ const routes: RouteRecordRaw[] = [
       icon: 'Setting',
       microApp: 'system-management'
     }
+  },
+  {
+    // 处理精确的/system路径，重定向到/system/settings
+    path: '/system',
+    redirect: '/system/settings'
   }
 ]
 

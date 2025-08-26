@@ -44,13 +44,36 @@ onMounted(() => {
 <style scoped>
 .user-management-app {
   width: 100%;
-  min-height: 600px; /* 设置最小高度 */
+  min-height: 600px;
   height: 100%;
   padding: 0;
   margin: 0;
   box-sizing: border-box;
   font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
   background-color: #f5f5f5;
+  /* 确保在微前端环境下样式不被干扰 */
+  position: relative;
+}
+
+/* 重置可能被父级影响的样式 */
+.user-management-app * {
+  box-sizing: border-box;
+}
+
+.debug-info p {
+  margin: 5px 0;
+  padding: 0;
+}
+
+.fallback-content h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  padding: 0;
+}
+
+.fallback-content p {
+  margin: 10px 0;
+  padding: 0;
 }
 
 .fade-enter-active,

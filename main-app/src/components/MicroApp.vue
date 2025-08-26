@@ -1,10 +1,64 @@
 <template>
   <div class="micro-app-container">
-    <div id="micro-app-container" class="micro-app-content"></div>
+    <!-- 加载状态 -->
+    <div v-if="loading" class="loading-container">
+      <el-icon class="is-loading"><Loading /></el-icon>
+      <span>正在加载微应用...</span>
+    </div>
+    
+    <!-- 微应用容器 -->
+    <div 
+      id="micro-app-container" 
+      ref="containerRef"
+      class="micro-app-content"
+      v-show="!loading"
+    ></div>
+    
+    <!-- 错误状态 -->
+    <div v-if="error" class="error-container">
+      <el-alert
+        title="微应用加载失败"
+        type="error"
+        :description="error"
+        show-icon
+      />
+      <el-button @click="retry" type="primary" style="margin-top: 10px;">重试</el-button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { Loading } from '@element-plus/icons-vue'
+
+const loading = ref(true)
+const error = ref('')
+const containerRef = ref<HTMLElement>()
+
+const retry = () => {
+  error.value = ''
+  loading.value = true
+  // 重新加载页面
+  window.location.reload()
+}
+
+onMounted(async () => {
+  await nextTick()
+  
+  // 确保容器元素存在
+  if (containerRef.value) {
+    console.log('微应用容器已就绪:', containerRef.value)
+    
+    // 模拟加载完成（实际上由qiankun控制）
+    setTimeout(() => {
+      loading.value = false
+    }, 500)
+  } else {
+    error.value = '微应用容器初始化失败'
+    loading.value = false
+  }
+})
+
 // 微应用容器组件
 // qiankun会自动将子应用挂载到 #micro-app-container 容器中
 </script>
@@ -13,16 +67,43 @@
 .micro-app-container {
   width: 100%;
   flex: 1;
-  min-height: 600px; /* 设置最小高度 */
+  min-height: 600px;
   position: relative;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  /* 移除可能影响子应用的样式 */
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
 }
 
 .micro-app-content {
   width: 100%;
   height: 100%;
-  min-height: 600px; /* 设置最小高度 */
+  min-height: 600px;
+  /* 确保子应用有完整的空间 */
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  color: #909399;
+  font-size: 14px;
+}
+
+.loading-container .el-icon {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.error-container {
+  padding: 20px;
+  text-align: center;
 }
 </style>

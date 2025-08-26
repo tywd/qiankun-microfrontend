@@ -4,6 +4,7 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import { renderWithQiankun, qiankunWindow } from 'vite-plugin-qiankun/dist/helper'
+import router from './router'
 import App from './App.vue'
 import './style.css'
 
@@ -21,6 +22,9 @@ function render(props: any = {}) {
   for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)
   }
+  
+  // 注册Vue Router
+  app.use(router)
   
   // 全局属性
   app.config.globalProperties.$qiankun = props
@@ -44,6 +48,13 @@ function render(props: any = {}) {
   
   console.log('系统管理应用挂载容器:', containerElement)
   app.mount(containerElement)
+  
+  // 添加路由就绪检查
+  router.isReady().then(() => {
+    console.log('系统管理子应用路由就绪')
+    console.log('当前路由:', router.currentRoute.value.path)
+    console.log('当前路由匹配:', router.currentRoute.value.matched.length)
+  })
 }
 
 // 独立运行时
