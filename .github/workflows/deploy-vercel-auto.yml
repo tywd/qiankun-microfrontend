@@ -85,22 +85,26 @@ jobs:
           # 直接使用vercel部署，不使用link
           echo "🚀 Starting deployment without link..."
           echo "📍 Current directory: $(pwd)"
+          echo "📍 Directory contents: $(ls -la)"
+          
+          # 清除可能存在的.vercel配置
+          rm -rf .vercel || true
           
           # 设置环境变量
           vercel env add NODE_ENV production production --token="${{ env.VERCEL_TOKEN }}" || true
           vercel env add VITE_APP_BASE_URL /user production --token="${{ env.VERCEL_TOKEN }}" || true
           
           if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
-            # 生产部署
+            # 生产部署 - 显式指定当前目录
             echo "🚀 Deploying to production..."
-            URL=$(vercel --prod --token="${{ env.VERCEL_TOKEN }}" --force)
+            URL=$(vercel . --prod --token="${{ env.VERCEL_TOKEN }}" --force)
             echo "production-url=${URL}" >> "$GITHUB_OUTPUT"
             echo "url=${URL}" >> "$GITHUB_OUTPUT"
             echo "✅ Production deployment: ${URL}"
           else
-            # 预览部署
+            # 预览部署 - 显式指定当前目录
             echo "🔄 Deploying preview..."
-            URL=$(vercel --token="${{ env.VERCEL_TOKEN }}" --force)
+            URL=$(vercel . --token="${{ env.VERCEL_TOKEN }}" --force)
             echo "url=${URL}" >> "$GITHUB_OUTPUT"
             echo "✅ Preview deployment: ${URL}"
           fi
@@ -140,22 +144,26 @@ jobs:
           # 直接使用vercel部署，不使用link
           echo "🚀 Starting deployment without link..."
           echo "📍 Current directory: $(pwd)"
+          echo "📍 Directory contents: $(ls -la)"
+          
+          # 清除可能存在的.vercel配置
+          rm -rf .vercel || true
           
           # 设置环境变量
           vercel env add NODE_ENV production production --token="${{ env.VERCEL_TOKEN }}" || true
           vercel env add VITE_APP_BASE_URL /system production --token="${{ env.VERCEL_TOKEN }}" || true
           
           if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
-            # 生产部署
+            # 生产部署 - 显式指定当前目录
             echo "🚀 Deploying to production..."
-            URL=$(vercel --prod --token="${{ env.VERCEL_TOKEN }}" --force)
+            URL=$(vercel . --prod --token="${{ env.VERCEL_TOKEN }}" --force)
             echo "production-url=${URL}" >> "$GITHUB_OUTPUT"
             echo "url=${URL}" >> "$GITHUB_OUTPUT"
             echo "✅ Production deployment: ${URL}"
           else
-            # 预览部署
+            # 预览部署 - 显式指定当前目录
             echo "🔄 Deploying preview..."
-            URL=$(vercel --token="${{ env.VERCEL_TOKEN }}" --force)
+            URL=$(vercel . --token="${{ env.VERCEL_TOKEN }}" --force)
             echo "url=${URL}" >> "$GITHUB_OUTPUT"
             echo "✅ Preview deployment: ${URL}"
           fi
@@ -196,6 +204,10 @@ jobs:
           # 直接使用vercel部署，不使用link
           echo "🚀 Starting main app deployment without link..."
           echo "📍 Current directory: $(pwd)"
+          echo "📍 Directory contents: $(ls -la)"
+          
+          # 清除可能存在的.vercel配置
+          rm -rf .vercel || true
           
           # 动态设置子应用URL环境变量
           USER_URL="${{ needs.deploy-user-management.outputs.production-url || 'https://qiankun-user-management.vercel.app' }}"
@@ -205,22 +217,22 @@ jobs:
           vercel env add VITE_SYSTEM_MANAGEMENT_URL "$SYSTEM_URL" production --token="${{ env.VERCEL_TOKEN }}" || true
           
           if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
-            # 生产部署
+            # 生产部署 - 显式指定当前目录
             echo "🚀 Deploying main app to production..."
             echo "📍 User Management URL: $USER_URL"
             echo "📍 System Management URL: $SYSTEM_URL"
-            URL=$(vercel --prod --token="${{ env.VERCEL_TOKEN }}" --force)
+            URL=$(vercel . --prod --token="${{ env.VERCEL_TOKEN }}" --force)
             echo "production-url=${URL}" >> "$GITHUB_OUTPUT"
             echo "url=${URL}" >> "$GITHUB_OUTPUT"
             echo "✅ Main app production deployment: ${URL}"
           else
-            # 预览部署
+            # 预览部署 - 显式指定当前目录
             echo "🔄 Deploying main app preview..."
             USER_PREVIEW_URL="${{ needs.deploy-user-management.outputs.preview-url || 'https://qiankun-user-management.vercel.app' }}"
             SYSTEM_PREVIEW_URL="${{ needs.deploy-system-management.outputs.preview-url || 'https://qiankun-system-management.vercel.app' }}"
             echo "📍 User Management Preview URL: $USER_PREVIEW_URL"
             echo "📍 System Management Preview URL: $SYSTEM_PREVIEW_URL"
-            URL=$(vercel --token="${{ env.VERCEL_TOKEN }}" --force)
+            URL=$(vercel . --token="${{ env.VERCEL_TOKEN }}" --force)
             echo "url=${URL}" >> "$GITHUB_OUTPUT"
             echo "✅ Main app preview deployment: ${URL}"
           fi
