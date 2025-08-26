@@ -1,0 +1,243 @@
+name: Auto Deploy to Vercel
+
+# 🚀 Git Push后自动部署到Vercel
+# 支持主分支推送和Pull Request预览
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+env:
+  # Vercel配置
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  # 项目ID（需要在GitHub Secrets中配置）
+  VERCEL_PROJECT_ID_MAIN: ${{ secrets.VERCEL_PROJECT_ID_MAIN }}
+  VERCEL_PROJECT_ID_USER: ${{ secrets.VERCEL_PROJECT_ID_USER }}
+  VERCEL_PROJECT_ID_SYSTEM: ${{ secrets.VERCEL_PROJECT_ID_SYSTEM }}
+  # Node.js配置
+  NODE_VERSION: '18'
+
+jobs:
+  # 🔍 检测变更的应用
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      main-app-changed: ${{ steps.changes.outputs.main-app }}
+      user-management-changed: ${{ steps.changes.outputs.user-management }}
+      system-management-changed: ${{ steps.changes.outputs.system-management }}
+      shared-changed: ${{ steps.changes.outputs.shared }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Detect changes
+        id: changes
+        uses: dorny/paths-filter@v2
+        with:
+          filters: |
+            main-app:
+              - 'main-app/**'
+            user-management:
+              - 'sub-apps/user-management/**'
+            system-management:
+              - 'sub-apps/system-management/**'
+            shared:
+              - 'shared/**'
+              - 'package.json'
+              - 'pnpm-workspace.yaml'
+
+  # 📦 部署子应用 - 用户管理
+  deploy-user-management:
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.user-management-changed == 'true' || needs.detect-changes.outputs.shared-changed == 'true' || github.event_name == 'push'
+    outputs:
+      preview-url: ${{ steps.deploy.outputs.url }}
+      production-url: ${{ steps.deploy.outputs.production-url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+        
+      - name: Deploy to Vercel
+        id: deploy
+        working-directory: sub-apps/user-management
+        run: |
+          # 设置环境变量
+          vercel env add NODE_ENV production production --token=${{ env.VERCEL_TOKEN }} --yes || true
+          vercel env add VITE_APP_BASE_URL /user production --token=${{ env.VERCEL_TOKEN }} --yes || true
+          
+          if [ "${{ github.event_name }}" == "push" ] && [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            # 生产部署
+            echo "🚀 Deploying to production..."
+            vercel pull --yes --environment=production --token=${{ env.VERCEL_TOKEN }}
+            vercel build --prod --token=${{ env.VERCEL_TOKEN }}
+            URL=$(vercel deploy --prebuilt --prod --token=${{ env.VERCEL_TOKEN }})
+            echo "production-url=$URL" >> $GITHUB_OUTPUT
+            echo "url=$URL" >> $GITHUB_OUTPUT
+            echo "✅ Production deployment: $URL"
+          else
+            # 预览部署
+            echo "🔄 Deploying preview..."
+            vercel pull --yes --environment=preview --token=${{ env.VERCEL_TOKEN }}
+            vercel build --token=${{ env.VERCEL_TOKEN }}
+            URL=$(vercel deploy --prebuilt --token=${{ env.VERCEL_TOKEN }})
+            echo "url=$URL" >> $GITHUB_OUTPUT
+            echo "✅ Preview deployment: $URL"
+          fi
+
+  # 📦 部署子应用 - 系统管理
+  deploy-system-management:
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.system-management-changed == 'true' || needs.detect-changes.outputs.shared-changed == 'true' || github.event_name == 'push'
+    outputs:
+      preview-url: ${{ steps.deploy.outputs.url }}
+      production-url: ${{ steps.deploy.outputs.production-url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+        
+      - name: Deploy to Vercel
+        id: deploy
+        working-directory: sub-apps/system-management
+        run: |
+          # 设置环境变量
+          vercel env add NODE_ENV production production --token=${{ env.VERCEL_TOKEN }} --yes || true
+          vercel env add VITE_APP_BASE_URL /system production --token=${{ env.VERCEL_TOKEN }} --yes || true
+          
+          if [ "${{ github.event_name }}" == "push" ] && [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            # 生产部署
+            echo "🚀 Deploying to production..."
+            vercel pull --yes --environment=production --token=${{ env.VERCEL_TOKEN }}
+            vercel build --prod --token=${{ env.VERCEL_TOKEN }}
+            URL=$(vercel deploy --prebuilt --prod --token=${{ env.VERCEL_TOKEN }})
+            echo "production-url=$URL" >> $GITHUB_OUTPUT
+            echo "url=$URL" >> $GITHUB_OUTPUT
+            echo "✅ Production deployment: $URL"
+          else
+            # 预览部署
+            echo "🔄 Deploying preview..."
+            vercel pull --yes --environment=preview --token=${{ env.VERCEL_TOKEN }}
+            vercel build --token=${{ env.VERCEL_TOKEN }}
+            URL=$(vercel deploy --prebuilt --token=${{ env.VERCEL_TOKEN }})
+            echo "url=$URL" >> $GITHUB_OUTPUT
+            echo "✅ Preview deployment: $URL"
+          fi
+
+  # 📦 部署主应用
+  deploy-main-app:
+    runs-on: ubuntu-latest
+    needs: [detect-changes, deploy-user-management, deploy-system-management]
+    # 主应用总是需要部署，因为它需要知道子应用的最新URL
+    if: always() && !failure() && !cancelled()
+    outputs:
+      preview-url: ${{ steps.deploy.outputs.url }}
+      production-url: ${{ steps.deploy.outputs.production-url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+        
+      - name: Deploy to Vercel
+        id: deploy
+        working-directory: main-app
+        run: |
+          # 动态设置子应用URL环境变量
+          USER_URL="${{ needs.deploy-user-management.outputs.production-url || 'https://qiankun-user-management.vercel.app' }}"
+          SYSTEM_URL="${{ needs.deploy-system-management.outputs.production-url || 'https://qiankun-system-management.vercel.app' }}"
+          
+          vercel env add VITE_USER_MANAGEMENT_URL "$USER_URL" production --token=${{ env.VERCEL_TOKEN }} --yes || true
+          vercel env add VITE_SYSTEM_MANAGEMENT_URL "$SYSTEM_URL" production --token=${{ env.VERCEL_TOKEN }} --yes || true
+          
+          if [ "${{ github.event_name }}" == "push" ] && [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            # 生产部署
+            echo "🚀 Deploying main app to production..."
+            echo "📍 User Management URL: $USER_URL"
+            echo "📍 System Management URL: $SYSTEM_URL"
+            vercel pull --yes --environment=production --token=${{ env.VERCEL_TOKEN }}
+            vercel build --prod --token=${{ env.VERCEL_TOKEN }}
+            URL=$(vercel deploy --prebuilt --prod --token=${{ env.VERCEL_TOKEN }})
+            echo "production-url=$URL" >> $GITHUB_OUTPUT
+            echo "url=$URL" >> $GITHUB_OUTPUT
+            echo "✅ Main app production deployment: $URL"
+          else
+            # 预览部署
+            echo "🔄 Deploying main app preview..."
+            USER_PREVIEW_URL="${{ needs.deploy-user-management.outputs.preview-url || 'https://qiankun-user-management.vercel.app' }}"
+            SYSTEM_PREVIEW_URL="${{ needs.deploy-system-management.outputs.preview-url || 'https://qiankun-system-management.vercel.app' }}"
+            echo "📍 User Management Preview URL: $USER_PREVIEW_URL"
+            echo "📍 System Management Preview URL: $SYSTEM_PREVIEW_URL"
+            vercel pull --yes --environment=preview --token=${{ env.VERCEL_TOKEN }}
+            vercel build --token=${{ env.VERCEL_TOKEN }}
+            URL=$(vercel deploy --prebuilt --token=${{ env.VERCEL_TOKEN }})
+            echo "url=$URL" >> $GITHUB_OUTPUT
+            echo "✅ Main app preview deployment: $URL"
+          fi
+
+  # 💬 通知部署结果
+  notify-deployment:
+    runs-on: ubuntu-latest
+    needs: [deploy-main-app, deploy-user-management, deploy-system-management]
+    if: always() && !cancelled()
+    steps:
+      - name: Comment deployment status
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        with:
+          script: |
+            const mainUrl = '${{ needs.deploy-main-app.outputs.url }}';
+            const userUrl = '${{ needs.deploy-user-management.outputs.url }}';
+            const systemUrl = '${{ needs.deploy-system-management.outputs.url }}';
+            
+            let body = '🚀 **预览部署完成！**\n\n';
+            body += '📍 **预览地址:**\n';
+            if (mainUrl) body += `- 🏠 主应用: ${mainUrl}\n`;
+            if (userUrl) body += `- 👥 用户管理: ${userUrl}\n`;
+            if (systemUrl) body += `- ⚙️ 系统管理: ${systemUrl}\n`;
+            body += '\n🔗 点击主应用链接即可访问完整的微前端应用！\n';
+            body += '\n> 📝 *此部署为预览版本，不会影响生产环境*';
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+            
+      - name: Print production URLs
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo "🎉 生产部署完成！"
+          echo "📍 主应用: ${{ needs.deploy-main-app.outputs.production-url }}"
+          echo "📍 用户管理: ${{ needs.deploy-user-management.outputs.production-url }}"
+          echo "📍 系统管理: ${{ needs.deploy-system-management.outputs.production-url }}"
