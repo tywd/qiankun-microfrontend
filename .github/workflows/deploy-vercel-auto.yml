@@ -209,15 +209,19 @@ jobs:
           # 清除可能存在的.vercel配置
           rm -rf .vercel || true
           
-          # 动态设置子应用URL环境变量
-          USER_URL="${{ needs.deploy-user-management.outputs.production-url || 'https://qiankun-user-management.vercel.app' }}"
-          SYSTEM_URL="${{ needs.deploy-system-management.outputs.production-url || 'https://qiankun-system-management.vercel.app' }}"
+          # 使用固定的生产环境URL，避免使用预览URL
+          USER_URL="https://qiankun-user-management.vercel.app"
+          SYSTEM_URL="https://qiankun-system-management.vercel.app"
+          
+          echo "🔧 Setting fixed production URLs..."
+          echo "📍 User Management URL: $USER_URL"
+          echo "📍 System Management URL: $SYSTEM_URL"
           
           vercel env add VITE_USER_MANAGEMENT_URL "$USER_URL" production --token="${{ env.VERCEL_TOKEN }}" || true
           vercel env add VITE_SYSTEM_MANAGEMENT_URL "$SYSTEM_URL" production --token="${{ env.VERCEL_TOKEN }}" || true
           
           if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
-            # 生产部署 - 强制指定项目配置覆盖Vercel设置
+            # 生产部署
             echo "🚀 Deploying main app to production..."
             echo "📍 User Management URL: $USER_URL"
             echo "📍 System Management URL: $SYSTEM_URL"
@@ -226,12 +230,10 @@ jobs:
             echo "url=${URL}" >> "$GITHUB_OUTPUT"
             echo "✅ Main app production deployment: ${URL}"
           else
-            # 预览部署 - 强制指定项目配置覆盖Vercel设置
+            # 预览部署
             echo "🔄 Deploying main app preview..."
-            USER_PREVIEW_URL="${{ needs.deploy-user-management.outputs.preview-url || 'https://qiankun-user-management.vercel.app' }}"
-            SYSTEM_PREVIEW_URL="${{ needs.deploy-system-management.outputs.preview-url || 'https://qiankun-system-management.vercel.app' }}"
-            echo "📍 User Management Preview URL: $USER_PREVIEW_URL"
-            echo "📍 System Management Preview URL: $SYSTEM_PREVIEW_URL"
+            echo "📍 User Management Preview URL: $USER_URL"
+            echo "📍 System Management Preview URL: $SYSTEM_URL"
             URL=$(vercel . --token="${{ env.VERCEL_TOKEN }}" --force)
             echo "url=${URL}" >> "$GITHUB_OUTPUT"
             echo "✅ Main app preview deployment: ${URL}"
