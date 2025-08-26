@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [
     vue(),
     qiankun('system-management', {
-      useDevMode: true
+      useDevMode: process.env.NODE_ENV === 'development'
     })
   ],
   server: {
@@ -32,13 +32,11 @@ export default defineConfig({
     rollupOptions: {
       external: [],
       output: {
-        globals: {}
+        // 确保资源能够被正确加载
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]'
       }
     }
-  },
-  // 确保在生产环境中也能正确暴露微前端入口
-  define: {
-    __VUE_OPTIONS_API__: true,
-    __VUE_PROD_DEVTOOLS__: false
   }
 })

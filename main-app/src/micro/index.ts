@@ -84,17 +84,14 @@ export function startMicroApps() {
     },
     singular: false, // 是否为单实例场景
     fetch: (url, options) => {
-      console.log('加载微应用资源:', url)
-      // 自定义 fetch 函数，添加更好的错误处理
+      // 自定义fetch，增强错误处理
+      console.log('正在加载微应用资源:', url)
       return window.fetch(url, {
         ...options,
-        credentials: 'omit',
-        mode: 'cors'
-      }).then(response => {
-        console.log('资源加载响应:', url, response.status, response.headers.get('content-type'))
-        return response
+        mode: 'cors',
+        credentials: 'omit'
       }).catch(error => {
-        console.error('资源加载失败:', url, error)
+        console.error('微应用资源加载失败:', url, error)
         throw error
       })
     }
