@@ -221,7 +221,7 @@ jobs:
             echo "🚀 Deploying main app to production..."
             echo "📍 User Management URL: $USER_URL"
             echo "📍 System Management URL: $SYSTEM_URL"
-            URL=$(vercel . --prod --token="${{ env.VERCEL_TOKEN }}" --force --scope="${{ env.VERCEL_ORG_ID }}" --project="${{ env.VERCEL_PROJECT_ID }}")
+            URL=$(vercel . --prod --token="${{ env.VERCEL_TOKEN }}" --force)
             echo "production-url=${URL}" >> "$GITHUB_OUTPUT"
             echo "url=${URL}" >> "$GITHUB_OUTPUT"
             echo "✅ Main app production deployment: ${URL}"
@@ -232,7 +232,7 @@ jobs:
             SYSTEM_PREVIEW_URL="${{ needs.deploy-system-management.outputs.preview-url || 'https://qiankun-system-management.vercel.app' }}"
             echo "📍 User Management Preview URL: $USER_PREVIEW_URL"
             echo "📍 System Management Preview URL: $SYSTEM_PREVIEW_URL"
-            URL=$(vercel . --token="${{ env.VERCEL_TOKEN }}" --force --scope="${{ env.VERCEL_ORG_ID }}" --project="${{ env.VERCEL_PROJECT_ID }}")
+            URL=$(vercel . --token="${{ env.VERCEL_TOKEN }}" --force)
             echo "url=${URL}" >> "$GITHUB_OUTPUT"
             echo "✅ Main app preview deployment: ${URL}"
           fi
