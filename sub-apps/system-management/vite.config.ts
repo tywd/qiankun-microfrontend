@@ -11,12 +11,15 @@ export default defineConfig({
       useDevMode: process.env.NODE_ENV === 'development'
     })
   ],
+  base: process.env.NODE_ENV === 'production' ? 'https://qiankun-system-management.vercel.app/' : '/',
   server: {
     port: 8082,
     host: '0.0.0.0',
     cors: true,
     headers: {
-      'Access-Control-Allow-Origin': '*'
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
     }
   },
   resolve: {
@@ -29,6 +32,11 @@ export default defineConfig({
     cssCodeSplit: false,
     sourcemap: false,
     minify: 'terser',
-    target: 'es2015'
+    target: 'es2015',
+    rollupOptions: {
+      output: {
+        manualChunks: undefined
+      }
+    }
   }
 })

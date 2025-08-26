@@ -34,9 +34,16 @@ function render(props: any = {}) {
   if (container) {
     // 微前端环境：直接使用qiankun提供的container
     containerElement = container
+    console.log('微前端模式 - 使用qiankun容器:', container)
   } else {
     // 独立运行：使用默认容器
-    containerElement = document.querySelector('#user-management-app')
+    containerElement = document.querySelector('#user-management-app') || document.querySelector('#app') || document.body
+    console.log('独立运行模式 - 使用默认容器:', containerElement)
+  }
+  
+  if (!containerElement) {
+    console.error('找不到挂载容器！')
+    return
   }
   
   console.log('用户管理应用挂载容器:', containerElement)

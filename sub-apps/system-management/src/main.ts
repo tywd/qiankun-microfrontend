@@ -25,9 +25,25 @@ function render(props: any = {}) {
   // 全局属性
   app.config.globalProperties.$qiankun = props
   
-  // 在微前端环境下直接使用主应用提供的容器
-  const containerEl = container ? container : document.querySelector('#system-management-app')
-  app.mount(containerEl)
+  // 修复挂载逻辑：在微前端环境下直接使用container，独立运行时使用默认容器
+  let containerElement
+  if (container) {
+    // 微前端环境：直接使用qiankun提供的container
+    containerElement = container
+    console.log('微前端模式 - 使用qiankun容器:', container)
+  } else {
+    // 独立运行：使用默认容器
+    containerElement = document.querySelector('#system-management-app') || document.querySelector('#app') || document.body
+    console.log('独立运行模式 - 使用默认容器:', containerElement)
+  }
+  
+  if (!containerElement) {
+    console.error('找不到挂载容器！')
+    return
+  }
+  
+  console.log('系统管理应用挂载容器:', containerElement)
+  app.mount(containerElement)
 }
 
 // 独立运行时
