@@ -1,7 +1,7 @@
 import { registerMicroApps, start, addGlobalUncaughtErrorHandler, initGlobalState } from 'qiankun'
 import type { RegistrableApp } from 'qiankun'
-import { globalEventBus, appEvents } from '../../../shared/eventBus'
-import { SHARED_CONFIG } from '../../../shared/index'
+import { globalEventBus, appEvents } from '../shared/eventBus'
+import { SHARED_CONFIG } from '../shared/index'
 
 // 微应用配置
 const microApps: RegistrableApp<any>[] = [
