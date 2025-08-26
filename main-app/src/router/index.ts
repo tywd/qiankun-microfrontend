@@ -16,6 +16,11 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    // 处理精确的/user路径，重定向到/user/list
+    path: '/user',
+    redirect: '/user/list'
+  },
+  {
     path: '/user/:path(.*)*',
     name: 'UserManagement',
     component: () => import('@/components/MicroApp.vue'),
@@ -26,9 +31,9 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
-    // 处理精确的/user路径，重定向到/user/list
-    path: '/user',
-    redirect: '/user/list'
+    // 处理精确的/system路径，重定向到/system/settings
+    path: '/system',
+    redirect: '/system/settings'
   },
   {
     path: '/system/:path(.*)*',
@@ -41,9 +46,10 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
-    // 处理精确的/system路径，重定向到/system/settings
-    path: '/system',
-    redirect: '/system/settings'
+    // 兜底路由：处理所有未匹配的路径
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    redirect: '/dashboard'
   }
 ]
 

@@ -5,7 +5,6 @@ import { qiankunWindow } from 'vite-plugin-qiankun/dist/helper'
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    redirect: '/settings'
   },
   {
     path: '/settings',
@@ -31,11 +30,11 @@ const routes: RouteRecordRaw[] = [
       title: '日志管理'
     }
   },
-  {
-    // 添加一个全局匹配路由，处理其他路径
-    path: '/:pathMatch(.*)*',
-    redirect: '/settings'
-  }
+//   {
+//     // 添加一个全局匹配路由，处理其他路径
+//     path: '/:pathMatch(.*)*',
+//     redirect: '/settings'
+//   }
 ]
 
 const router = createRouter({

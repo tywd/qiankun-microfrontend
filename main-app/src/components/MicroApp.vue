@@ -30,6 +30,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { Loading } from '@element-plus/icons-vue'
+import { startMicroAppsOnDemand } from '../micro'
 
 const loading = ref(true)
 const error = ref('')
@@ -49,10 +50,16 @@ onMounted(async () => {
   if (containerRef.value) {
     console.log('微应用容器已就绪:', containerRef.value)
     
-    // 模拟加载完成（实际上由qiankun控制）
-    setTimeout(() => {
+    try {
+      // 容器就绪后，立即启动qiankun（如果还没有启动的话）
+      await startMicroAppsOnDemand()
+      console.log('qiankun启动成功，微应用将被加载')
       loading.value = false
-    }, 500)
+    } catch (startError) {
+      console.error('qiankun启动失败:', startError)
+      error.value = `qiankun启动失败: ${(startError as Error).message || '未知错误'}`
+      loading.value = false
+    }
   } else {
     error.value = '微应用容器初始化失败'
     loading.value = false

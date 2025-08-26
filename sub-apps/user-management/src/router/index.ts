@@ -3,10 +3,10 @@ import type { RouteRecordRaw } from 'vue-router'
 import { qiankunWindow } from 'vite-plugin-qiankun/dist/helper'
 
 const routes: RouteRecordRaw[] = [
-  {
-    path: '/',
-    redirect: '/list'
-  },
+//   {
+//     path: '/',
+//     redirect: '/list'
+//   },
   {
     path: '/list',
     name: 'UserList',
@@ -39,11 +39,11 @@ const routes: RouteRecordRaw[] = [
       title: '用户详情'
     }
   },
-  {
-    // 添加一个全局匹配路由，处理其他路径
-    path: '/:pathMatch(.*)*',
-    redirect: '/list'
-  }
+//   {
+//     // 添加一个全局匹配路由，处理其他路径
+//     path: '/:pathMatch(.*)*',
+//     redirect: '/list'
+//   }
 ]
 
 const router = createRouter({

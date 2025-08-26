@@ -23,18 +23,15 @@ app.use(router)
 // 挂载主应用
 app.mount('#app')
 
-// 等待路由就绪后再启动微前端
+// 等待路由就绪后进行微前端初始化（但不立即启动）
 router.isReady().then(() => {
-  console.log('主应用路由就绪，开始启动微前端')
+  console.log('主应用路由就绪，初始化微前端配置')
   
-  // 注册微应用
+  // 注册微应用（只注册，不启动）
   registerApps()
   
   // 设置错误处理
   setupErrorHandler()
   
-  // 启动微前端
-  startMicroApps()
-  
-  console.log('微前端系统启动完成')
+  console.log('微前端配置初始化完成，等待用户访问时启动')
 })
