@@ -125,11 +125,35 @@ vercel link
 **解决方案**: 确保vercel.json中配置了CORS头部
 ```json
 {
-  "headers": {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization"
-  }
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install",
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
 }
 ```
 
@@ -137,14 +161,16 @@ vercel link
 **解决方案**: 确保所有路由都重定向到index.html
 ```json
 {
-  "routes": [
+  "rewrites": [
     {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
 ```
+
+**注意**: 不要使用过时的`routes`配置，会与`headers`冲突
 
 #### 3. 环境变量未生效
 **解决方案**: 
@@ -157,6 +183,28 @@ vercel link
 1. 检查Node.js版本 (需要18+)
 2. 清除依赖重新安装: `rm -rf node_modules && pnpm install`
 3. 检查TypeScript错误
+4. 确保构建依赖在dependencies中（云环境需要）
+
+#### 5. 微前端容器检查问题
+**问题描述**: 一直输出 '等待微前端容器就绪...'
+**解决方案**: 优化容器检查机制
+```typescript
+// 使用MutationObserver替代setTimeout轮询
+const observer = new MutationObserver(() => {
+  if (document.querySelector(containerSelector)) {
+    observer.disconnect()
+    resolve()
+  }
+})
+observer.observe(document.body, { childList: true, subtree: true })
+```
+
+#### 6. GitHub Actions部署错误
+**常见错误**:
+- npm缓存错误: 移除`cache: 'npm'`配置
+- Shell脚本错误: 添加`shell: bash`和`set -e`
+- Vercel CLI参数错误: 移除`--yes`和`--project`参数
+- 路径重复问题: 移除`working-directory`配置
 
 ### 性能优化
 
@@ -174,9 +222,29 @@ Vercel自动启用Gzip和Brotli压缩
 
 ## 📊 监控和分析
 
+## 📊 监控和分析
+
 ### Vercel Analytics
 1. 在Vercel Dashboard中启用Analytics
 2. 查看页面性能和用户访问数据
+3. 监控错误率和音响时间
+
+### 部署日志
+```bash
+# 查看部署日志
+vercel logs [deployment-url]
+
+# 查看实时日志
+vercel logs [deployment-url] --follow
+```
+
+### 健康检查
+```bash
+# 检查应用状态
+curl -I https://qiankun-main-app.vercel.app
+curl -I https://qiankun-user-management.vercel.app
+curl -I https://qiankun-system-management.vercel.app
+```
 
 ### 部署日志
 ```bash
