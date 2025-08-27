@@ -1,0 +1,159 @@
+name: Deploy to Vercel (Disabled)
+
+# 暂时禁用GitHub Actions部署，使用Vercel的GitHub集成
+# on:
+#   push:
+#     branches: [ main, master ]
+#   pull_request:
+#     branches: [ main, master ]
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID_MAIN: ${{ secrets.VERCEL_PROJECT_ID_MAIN }}
+  VERCEL_PROJECT_ID_USER: ${{ secrets.VERCEL_PROJECT_ID_USER }}
+  VERCEL_PROJECT_ID_SYSTEM: ${{ secrets.VERCEL_PROJECT_ID_SYSTEM }}
+
+jobs:
+  deploy-user-management:
+    runs-on: ubuntu-latest
+    outputs:
+      user-management-url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+          
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+        
+      - name: Pull Vercel Environment Information
+        run: |
+          cd sub-apps/user-management
+          vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+          
+      - name: Build Project Artifacts
+        run: |
+          cd sub-apps/user-management
+          vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+          
+      - name: Deploy Project Artifacts to Vercel
+        id: deploy
+        run: |
+          cd sub-apps/user-management
+          url=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          echo "url=$url" >> $GITHUB_OUTPUT
+          echo "User Management deployed to: $url"
+
+  deploy-system-management:
+    runs-on: ubuntu-latest
+    outputs:
+      system-management-url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+          
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+        
+      - name: Pull Vercel Environment Information
+        run: |
+          cd sub-apps/system-management
+          vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+          
+      - name: Build Project Artifacts
+        run: |
+          cd sub-apps/system-management
+          vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+          
+      - name: Deploy Project Artifacts to Vercel
+        id: deploy
+        run: |
+          cd sub-apps/system-management
+          url=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          echo "url=$url" >> $GITHUB_OUTPUT
+          echo "System Management deployed to: $url"
+
+  deploy-main-app:
+    runs-on: ubuntu-latest
+    needs: [deploy-user-management, deploy-system-management]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+          
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+        
+      - name: Pull Vercel Environment Information
+        run: |
+          cd main-app
+          vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+          
+      - name: Set Environment Variables
+        run: |
+          cd main-app
+          vercel env add VITE_USER_MANAGEMENT_URL "${{ needs.deploy-user-management.outputs.user-management-url }}" production --token=${{ secrets.VERCEL_TOKEN }} --yes || true
+          vercel env add VITE_SYSTEM_MANAGEMENT_URL "${{ needs.deploy-system-management.outputs.system-management-url }}" production --token=${{ secrets.VERCEL_TOKEN }} --yes || true
+          
+      - name: Build Project Artifacts
+        run: |
+          cd main-app
+          vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+          
+      - name: Deploy Project Artifacts to Vercel
+        id: deploy
+        run: |
+          cd main-app
+          url=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          echo "url=$url" >> $GITHUB_OUTPUT
+          echo "Main App deployed to: $url"
+          
+      - name: Comment deployment URLs
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🚀 **部署完成！**
+              
+              📍 **部署地址:**
+              - 主应用: ${{ steps.deploy.outputs.url }}
+              - 用户管理: ${{ needs.deploy-user-management.outputs.user-management-url }}
+              - 系统管理: ${{ needs.deploy-system-management.outputs.system-management-url }}
+              
+              🔗 点击主应用链接即可访问完整的微前端应用！`
+            })

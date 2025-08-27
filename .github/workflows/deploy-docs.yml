@@ -29,16 +29,16 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
-          cache: npm
-          cache-dependency-path: docs-site/package-lock.json
+          node-version: 20
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
       - name: Install dependencies
         working-directory: docs-site
-        run: npm ci
+        run: |
+          npm cache clean --force
+          npm install
 
       - name: Build with VitePress
         working-directory: docs-site

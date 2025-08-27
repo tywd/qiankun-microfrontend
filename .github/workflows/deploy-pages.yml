@@ -1,0 +1,84 @@
+name: Deploy to GitHub Pages (Disabled)
+
+# 暂时禁用GitHub Pages部署，使用Vercel部署
+# on:
+#   push:
+#     branches: [ main, master ]
+#   pull_request:
+#     branches: [ main, master ]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'pnpm'
+        
+    - name: Install pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 8
+        
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+      
+    - name: Build main app
+      run: |
+        cd main-app
+        pnpm build
+        
+    - name: Build user management app
+      run: |
+        cd sub-apps/user-management
+        pnpm build
+        
+    - name: Build system management app
+      run: |
+        cd sub-apps/system-management
+        pnpm build
+        
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+      
+    - name: Prepare deployment directory
+      run: |
+        mkdir -p pages-deploy
+        # 复制主应用
+        cp -r main-app/dist/* pages-deploy/
+        # 复制子应用
+        mkdir -p pages-deploy/user-management
+        cp -r sub-apps/user-management/dist/* pages-deploy/user-management/
+        mkdir -p pages-deploy/system-management
+        cp -r sub-apps/system-management/dist/* pages-deploy/system-management/
+        
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: './pages-deploy'
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
