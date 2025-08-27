@@ -1,5 +1,11 @@
 <template>
   <div id="system-management-app" class="system-management-app">
+    <!-- 调试信息 -->
+    <div class="debug-info" style="background: #e6f7ff; padding: 10px; margin-bottom: 10px; border: 1px solid #91d5ff; border-radius: 4px;">
+      <p><strong>系统管理子应用已加载</strong></p>
+      <p>当前时间: {{ new Date().toLocaleTimeString() }}</p>
+      <p>qiankun环境: {{ isQiankunEnv ? '是' : '否' }}</p>
+    </div>
     <!-- 路由内容 -->
     <router-view v-slot="{ Component }">
       <template v-if="Component">
@@ -8,7 +14,6 @@
       <template v-else>
         <!-- 默认内容（当没有路由匹配时显示） -->
         <div class="system-dashboard">
-          <h1>系统管理模块</h1>
           <el-card>
             <el-row :gutter="20">
               <el-col :span="8">
@@ -41,9 +46,12 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { qiankunWindow } from 'vite-plugin-qiankun/dist/helper'
 
 const router = useRouter()
+const isQiankunEnv = ref(qiankunWindow.__POWERED_BY_QIANKUN__)
 
 const goToSettings = () => {
   router.push('/settings')
@@ -107,6 +115,11 @@ const goToLogs = () => {
   margin-bottom: 15px;
   color: #606266;
   margin-top: 0;
+  padding: 0;
+}
+
+.debug-info p {
+  margin: 5px 0;
   padding: 0;
 }
 </style>

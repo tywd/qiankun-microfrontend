@@ -13,10 +13,26 @@
         <component :is="Component" />
       </template>
       <template v-else>
-        <div class="fallback-content" style="background: #fff2e8; padding: 20px; border: 1px solid #ffbb96; border-radius: 4px; text-align: center;">
-          <h3>✨ 用户管理子应用</h3>
-          <p>路由未匹配到内容，请检查路由配置</p>
-          <el-button type="primary" @click="goToUserList">跳转到用户列表</el-button>
+        <!-- 默认内容（当没有路由匹配时显示） -->
+        <div class="user-dashboard">
+          <el-card>
+            <el-row :gutter="20">
+              <el-col :span="12">
+                <el-card class="feature-card">
+                  <h3>用户列表</h3>
+                  <p>展示所有用户信息列表</p>
+                  <el-button type="primary" @click="goToUserList">进入用户列表</el-button>
+                </el-card>
+              </el-col>
+              <el-col :span="12">
+                <el-card class="feature-card">
+                  <h3>添加用户</h3>
+                  <p>新增用户到用户列表</p>
+                  <el-button type="success" @click="goAddUser">去新增用户</el-button>
+                </el-card>
+              </el-col>
+            </el-row>
+          </el-card>
         </div>
       </template>
     </router-view>
@@ -35,6 +51,10 @@ const goToUserList = () => {
   router.push('/list')
 }
 
+const goAddUser = () => {
+  router.push('/add')
+}
+
 onMounted(() => {
   console.log('用户管理App组件已挂载')
 })
@@ -46,7 +66,6 @@ onMounted(() => {
   width: 100%;
   min-height: 600px;
   height: 100%;
-  padding: 0;
   margin: 0;
   box-sizing: border-box;
   font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
@@ -62,6 +81,28 @@ onMounted(() => {
 
 .debug-info p {
   margin: 5px 0;
+  padding: 0;
+}
+
+.feature-card {
+  text-align: center;
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.feature-card h3 {
+  margin-bottom: 10px;
+  color: #409EFF;
+  margin-top: 0;
+  padding: 0;
+}
+
+.feature-card p {
+  margin-bottom: 15px;
+  color: #606266;
+  margin-top: 0;
   padding: 0;
 }
 
@@ -84,5 +125,19 @@ onMounted(() => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+.user-dashboard {
+  padding: 20px;
+  /* 确保内容区域正常显示 */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.user-dashboard h1 {
+  margin-bottom: 20px;
+  color: #303133;
+  /* 重置可能的父级样式影响 */
+  margin-top: 0;
+  padding: 0;
 }
 </style>
