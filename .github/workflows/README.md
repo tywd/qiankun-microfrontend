@@ -4,10 +4,10 @@
 
 ## 📁 文件列表
 
-### 🚀 当前使用的部署方式
+### 🚀 当前唯一活跃的工作流
 
 #### `deploy-vercel-auto.yml` ⭐
-- **用途**: GitHub Actions主动式Vercel部署（当前主要部署方式）
+- **用途**: GitHub Actions主动式Vercel部署（当前唯一活跃的部署方式）
 - **触发**: 推送到main/master分支，Pull Request
 - **部署方式**: 使用Vercel CLI在GitHub Actions中执行部署
 - **特性**: 
@@ -19,45 +19,19 @@
   - 完全由GitHub Actions控制部署流程
 - **状态**: ✅ 活跃使用
 
-### 🔄 备用部署方案
+### 📁 所有备用方案已移动到备用目录 ([workflows-backup/](../workflows-backup/))
 
-#### `deploy-vercel.yml`
-- **用途**: Vercel原生GitHub集成部署（备用方案）
-- **触发**: 本应配合Vercel Dashboard的GitHub集成使用
-- **部署方式**: Vercel直接响应GitHub Webhook进行部署
-- **特性**:
-  - 零配置自动部署（理论上）
-  - Vercel原生集成，无需GitHub Actions
-  - 支持预构建部署流程
-  - 环境变量自动管理
-- **状态**: ⏸️ 已禁用，保留作为备用方案
-- **禁用原因**: 项目选择了更可控的GitHub Actions主动部署方式
+为了保持GitHub Actions界面的整洁，所有备用和禁用的工作流文件都已移动到备用目录。
 
-#### `deploy-cloud-server.yml`
-- **用途**: 云服务器Docker化部署
-- **触发**: 手动触发或特定条件
-- **特性**: 
-  - Docker容器化部署
-  - 适合自建服务器环境
-  - 支持生产环境部署
-- **状态**: 🟡 备用方案，留作后续升级使用
+#### 已移动的文件：
+- ✅ `deploy-vercel.yml` - Vercel原生GitHub集成部署
+- ✅ `deploy-cloud-server.yml` - 云服务器Docker化部署  
+- ✅ `deploy-pages.yml` - GitHub Pages静态站点部署
+- ✅ `deploy.yml` - 通用微前端应用部署
 
-#### `deploy-pages.yml`
-- **用途**: GitHub Pages静态站点部署
-- **触发**: 推送到gh-pages分支
-- **特性**: 
-  - 免费静态网站托管
-  - 适合展示和演示
-  - 简单的部署流程
-- **状态**: 🟡 备用方案，留作后续升级使用
+**移动原因**: 当前项目专注于使用单一的、经过验证的部署方式，避免配置复杂性和潜在冲突。
 
-#### `deploy.yml`
-- **用途**: 通用微前端应用部署（已禁用）
-- **特性**: 
-  - Docker多应用部署
-  - 完整的构建和测试流程
-  - 支持多环境部署
-- **状态**: ⏸️ 已禁用，为Docker部署保留
+**访问备用方案**: 查看 [workflows-backup目录](../workflows-backup/) 了解详细的备用部署方案说明。
 
 ## 🔄 部署策略说明
 
@@ -137,7 +111,7 @@ graph TD
 ### 切换部署方式
 
 #### 1. 切换到Vercel原生集成
-```bash
+``bash
 # 禁用GitHub Actions部署
 1. 注释掉 deploy-vercel-auto.yml 中的 on: 配置
 2. 启用 deploy-vercel.yml 中的 on: 配置
