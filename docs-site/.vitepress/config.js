@@ -6,7 +6,7 @@ export default defineConfig({
   description: '基于 Qiankun + Vue3 + Vite + TypeScript 构建的企业级微前端管理后台系统',
   
   // 基础配置
-  base: process.env.NODE_ENV === 'production' ? '/qiankun-microfrontend/' : '/',
+  base: '/qiankun-microfrontend/',
   lang: 'zh-CN',
   
   // 忽略死链接
