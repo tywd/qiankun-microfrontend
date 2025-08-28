@@ -14,8 +14,6 @@ export default defineConfig({
     // 忽略本地开发链接
     /^http:\/\/localhost:/,
     // 忽略未创建的页面
-    './cloud-server',
-    './github-actions',
     './../docs/project-development-summary',
     './../docs/vercel-deployment-guide',
     './../docs/performance-optimization'
@@ -135,7 +133,7 @@ export default defineConfig({
   
   // 头部配置
   head: [
-    ['link', { rel: 'icon', href: '/qiankun-microfrontend/favicon.ico' }],
+    ['link', { rel: 'icon', href: '/favicon.ico' }],
     ['meta', { name: 'theme-color', content: '#3c4043' }],
     ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
     ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }]
