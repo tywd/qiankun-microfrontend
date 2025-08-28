@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitepress'
 
+// VitePress 配置文件 - 企业级微前端项目文档站点
 export default defineConfig({
   title: '企业级微前端项目',
   description: '基于 Qiankun + Vue3 + Vite + TypeScript 构建的企业级微前端管理后台系统',
