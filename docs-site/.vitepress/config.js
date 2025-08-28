@@ -5,8 +5,8 @@ export default defineConfig({
   title: '企业级微前端项目',
   description: '基于 Qiankun + Vue3 + Vite + TypeScript 构建的企业级微前端管理后台系统',
   
-  // 基础配置
-  base: '/qiankun-microfrontend/',
+  // 基础配置 - 修改为根路径以便在Vercel上正确部署
+  base: '/',
   lang: 'zh-CN',
   
   // 忽略死链接

@@ -1,45 +1,67 @@
-name: Deploy VitePress Documentation
+name: Deploy Docs to Vercel
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
+    paths:
+      - 'docs-site/**'
   workflow_dispatch:
 
+env:
+  # Vercel配置 - 与微前端项目共用
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  # 文档站点项目ID
+  VERCEL_PROJECT_ID_DOCS: ${{ secrets.VERCEL_PROJECT_ID_DOCS }}
+
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '18'
 
       - name: Install dependencies
-        working-directory: docs-site
         run: |
-          npm cache clean --force
+          cd docs-site
           npm install
 
-      - name: Build VitePress
-        working-directory: docs-site
+      - name: Build
         run: |
+          cd docs-site
           npm run docs:build
-          echo "构建完成！"
-          ls -la .vitepress/dist/
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs-site/.vitepress/dist
-          force_orphan: true
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: 'deploy: update documentation site'
+      - name: Deploy to Vercel
+        env:
+          VERCEL_PROJECT_ID: ${{ env.VERCEL_PROJECT_ID_DOCS }}
+          VERCEL_ORG_ID: ${{ env.VERCEL_ORG_ID }}
+        shell: bash
+        run: |
+          set -e
+          
+          # 进入文档站点目录
+          cd docs-site
+          
+          # 安装Vercel CLI
+          npm install --global vercel@latest
+          
+          # 清除可能存在的.vercel配置
+          rm -rf .vercel || true
+          
+          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
+            # 生产部署
+            echo "🚀 Deploying docs to production..."
+            URL=$(vercel . --prod --token="${{ env.VERCEL_TOKEN }}" --force)
+            echo "✅ Production deployment: ${URL}"
+          else
+            # 预览部署
+            echo "🔄 Deploying docs preview..."
+            URL=$(vercel . --token="${{ env.VERCEL_TOKEN }}" --force)
+            echo "✅ Preview deployment: ${URL}"
+          fi
