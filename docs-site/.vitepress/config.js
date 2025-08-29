@@ -55,7 +55,7 @@ export default defineConfig({
           items: [
             { text: '部署概览', link: '/deployment/' },
             { text: 'Vercel部署', link: '/deployment/vercel' },
-            { text: 'GitHub Actions', link: '/deployment/github-actions' },
+            { text: 'GitHub Actions', link: '/deployment/github-actions' }, // 恢复原来的链接
             { text: '云服务器部署', link: '/deployment/cloud-server' },
             { text: '部署对比', link: '/deployment/comparison' }
           ]
@@ -128,6 +128,15 @@ export default defineConfig({
     server: {
       port: 5173,
       host: '0.0.0.0'
+    },
+    // 添加构建优化配置
+    build: {
+      minify: 'terser',
+      chunkSizeWarningLimit: 1000
+    },
+    // 优化内存使用
+    optimizeDeps: {
+      force: true
     }
   },
   

@@ -26,16 +26,25 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'docs-site/package-lock.json'
 
       - name: Install dependencies
         run: |
           cd docs-site
-          npm install
+          npm ci
+          npm list vitepress
 
       - name: Build
         run: |
           cd docs-site
-          npm run docs:build
+          # 构建前清除缓存
+          rm -rf node_modules/.vite .vitepress/cache .vitepress/dist
+          # 使用NODE_OPTIONS增加内存限制
+          NODE_OPTIONS=--max_old_space_size=4096 npm run docs:build
+        env:
+          # 启用详细日志
+          DEBUG: vitepress:*
 
       - name: Deploy to Vercel
         env:
@@ -47,6 +56,12 @@ jobs:
           
           # 进入文档站点目录
           cd docs-site
+          
+          # 检查构建结果
+          if [ ! -d ".vitepress/dist" ]; then
+            echo "❌ 构建失败: 缺少 .vitepress/dist 目录"
+            exit 1
+          fi
           
           # 安装Vercel CLI
           npm install --global vercel@latest

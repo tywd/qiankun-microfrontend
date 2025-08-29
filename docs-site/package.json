@@ -11,9 +11,12 @@
     "docs:build": "vitepress build .",
     "docs:preview": "vitepress preview ."
   },
-  "devDependencies": {
-    "vitepress": "^1.0.0",
+  "dependencies": {
+    "vitepress": "1.0.0-rc.36",
     "vue": "^3.3.4"
+  },
+  "devDependencies": {
+    "terser": "^5.24.0"
   },
   "engines": {
     "node": ">=18.0.0"
