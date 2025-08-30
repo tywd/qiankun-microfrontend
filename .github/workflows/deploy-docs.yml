@@ -26,7 +26,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          // 完全移除缓存配置以避免路径问题
+          # 完全移除缓存配置以避免路径问题
 
       - name: Install dependencies
         run: |
