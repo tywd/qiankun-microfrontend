@@ -26,8 +26,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
+          // 完全移除缓存配置以避免路径问题
 
       - name: Install dependencies
         run: |
