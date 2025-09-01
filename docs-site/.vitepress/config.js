@@ -1,7 +1,8 @@
 import { defineConfig } from 'vitepress'
+import { withMermaid } from 'vitepress-plugin-mermaid'
 
 // VitePress 配置文件
-export default defineConfig({
+export default withMermaid(defineConfig({
   title: '企业级微前端项目',
   description: '基于 Qiankun + Vue3 + Vite + TypeScript 构建的企业级微前端管理后台系统',
 
@@ -151,45 +152,7 @@ export default defineConfig({
     ['link', { rel: 'icon', href: '/favicon.ico' }],
     ['meta', { name: 'theme-color', content: '#3c4043' }],
     ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
-    ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }],
-    // 加载 Mermaid
-    ['script', { src: 'https://cdn.jsdelivr.net/npm/mermaid@10.9.4/dist/mermaid.min.js' }],
-    ['script', { 
-      type: 'module',
-      innerHTML: `
-        document.addEventListener('DOMContentLoaded', () => {
-          mermaid.initialize({
-            startOnLoad: true,
-            theme: 'default',
-            securityLevel: 'loose',
-            flowchart: { curve: 'basis', htmlLabels: true }
-          });
-          
-          // 使用MutationObserver监听DOM变化
-          const observer = new MutationObserver((mutations) => {
-            // 扫描添加的新节点是否包含需要初始化的图表
-            mutations.forEach(mutation => {
-              if (mutation.addedNodes.length) {
-                setTimeout(() => {
-                  mermaid.init(undefined, 'pre code.language-mermaid');
-                }, 500);
-              }
-            });
-          });
-          
-          // 监听整个文档的变化
-          observer.observe(document.body, { 
-            childList: true, 
-            subtree: true 
-          });
-          
-          // 初始加载
-          setTimeout(() => {
-            mermaid.init(undefined, 'pre code.language-mermaid');
-          }, 1000);
-        });
-      `
-    }]
+    ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }]
   ],
 
   // markdown配置
@@ -201,6 +164,9 @@ export default defineConfig({
       dangerLabel: '危险',
       infoLabel: '信息',
       detailsLabel: '详细信息'
+    },
+    config: (md) => {
+      md.use(withMermaid)
     }
   }
-})
+}))

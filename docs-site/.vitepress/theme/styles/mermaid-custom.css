@@ -1,9 +1,14 @@
 /* 自定义 Mermaid 图表样式 */
 .mermaid {
-  position: relative;
   margin: 1.5rem 0;
-  transition: transform 0.3s ease;
-  transform-origin: center center;
+  text-align: center;
+}
+
+/* 确保Mermaid SVG图表居中显示 */
+.mermaid svg {
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
 }
 
 /* 图表容器 */
