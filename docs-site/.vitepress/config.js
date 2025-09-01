@@ -1,14 +1,14 @@
 import { defineConfig } from 'vitepress'
 
-// VitePress 配置文件 - 企业级微前端项目文档站点
+// VitePress 配置文件
 export default defineConfig({
   title: '企业级微前端项目',
   description: '基于 Qiankun + Vue3 + Vite + TypeScript 构建的企业级微前端管理后台系统',
-  
+
   // 基础配置 - 修改为根路径以便在Vercel上正确部署
   base: '/',
   lang: 'zh-CN',
-  
+
   // 忽略死链接
   ignoreDeadLinks: [
     // 忽略本地开发链接
@@ -18,7 +18,7 @@ export default defineConfig({
     './../docs/vercel-deployment-guide',
     './../docs/performance-optimization'
   ],
-  
+
   // 主题配置
   themeConfig: {
     // 导航栏
@@ -28,7 +28,7 @@ export default defineConfig({
       { text: '问题排查', link: '/troubleshooting/' },
       { text: '在线预览', link: 'https://qiankun-main-app.vercel.app' }
     ],
-    
+
     // 侧边栏
     sidebar: {
       '/guide/': [
@@ -45,7 +45,10 @@ export default defineConfig({
           items: [
             { text: '本地开发', link: '/guide/development' },
             { text: '构建部署', link: '/guide/build' },
-            { text: '性能优化', link: '/guide/performance' }
+            { text: '性能优化', link: '/guide/performance' },
+            { text: '项目结构', link: '/guide/project-structure' },
+            { text: '结构图表', link: '/guide/project-structure-diagram' },
+            { text: 'Mermaid图表示例', link: '/guide/mermaid-examples' }
           ]
         }
       ],
@@ -72,19 +75,19 @@ export default defineConfig({
         }
       ]
     },
-    
+
     // 页脚
     footer: {
       message: '基于 MIT 许可发布',
       copyright: 'Copyright © 2024 企业级微前端项目'
     },
-    
+
     // 编辑链接
     editLink: {
       pattern: 'https://github.com/tywd/qiankun-microfrontend/edit/main/docs-site/:path',
       text: '在 GitHub 上编辑此页面'
     },
-    
+
     // 最后更新时间
     lastUpdated: {
       text: '最后更新于',
@@ -93,36 +96,36 @@ export default defineConfig({
         timeStyle: 'medium'
       }
     },
-    
+
     // 搜索
     search: {
       provider: 'local'
     },
-    
+
     // 社交链接
     socialLinks: [
       { icon: 'github', link: 'https://github.com/tywd/qiankun-microfrontend' }
     ],
-    
+
     // 文档页脚导航
     docFooter: {
       prev: '上一页',
       next: '下一页'
     },
-    
+
     // 大纲配置
     outline: {
       label: '页面导航',
       level: [2, 3]
     },
-    
+
     // 返回顶部
     returnToTopLabel: '回到顶部',
-    
+
     // 外部链接图标
     externalLinkIcon: true
   },
-  
+
   // 构建配置
   vite: {
     server: {
@@ -137,17 +140,58 @@ export default defineConfig({
     // 优化内存使用
     optimizeDeps: {
       force: true
-    }
+    },
+    plugins: [
+      // Mermaid 插件已经在 withMermaid 中注册，无需再次注册
+    ],
   },
-  
+
   // 头部配置
   head: [
     ['link', { rel: 'icon', href: '/favicon.ico' }],
     ['meta', { name: 'theme-color', content: '#3c4043' }],
     ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
-    ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }]
+    ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }],
+    // 加载 Mermaid
+    ['script', { src: 'https://cdn.jsdelivr.net/npm/mermaid@10.9.4/dist/mermaid.min.js' }],
+    ['script', { 
+      type: 'module',
+      innerHTML: `
+        document.addEventListener('DOMContentLoaded', () => {
+          mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose',
+            flowchart: { curve: 'basis', htmlLabels: true }
+          });
+          
+          // 使用MutationObserver监听DOM变化
+          const observer = new MutationObserver((mutations) => {
+            // 扫描添加的新节点是否包含需要初始化的图表
+            mutations.forEach(mutation => {
+              if (mutation.addedNodes.length) {
+                setTimeout(() => {
+                  mermaid.init(undefined, 'pre code.language-mermaid');
+                }, 500);
+              }
+            });
+          });
+          
+          // 监听整个文档的变化
+          observer.observe(document.body, { 
+            childList: true, 
+            subtree: true 
+          });
+          
+          // 初始加载
+          setTimeout(() => {
+            mermaid.init(undefined, 'pre code.language-mermaid');
+          }, 1000);
+        });
+      `
+    }]
   ],
-  
+
   // markdown配置
   markdown: {
     lineNumbers: true,
