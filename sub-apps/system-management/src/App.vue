@@ -121,5 +121,7 @@ const goToLogs = () => {
 .debug-info p {
   margin: 5px 0;
   padding: 0;
+  color: #000;
+  font-weight: bold;
 }
 </style>

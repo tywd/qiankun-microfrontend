@@ -4,9 +4,6 @@ import { qiankunWindow } from 'vite-plugin-qiankun/dist/helper'
 
 const routes: RouteRecordRaw[] = [
   {
-    path: '/',
-  },
-  {
     path: '/settings',
     name: 'SystemSettings',
     component: () => import('@/views/SystemSettings.vue'),
